@@ -1,0 +1,74 @@
+name: dbt CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+env:
+  DBT_PROJECT_DIR: ./netflix
+
+jobs:
+  dbt-ci:
+    name: dbt Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dbt
+        run: |
+          pip install dbt-snowflake==1.8.4
+
+      - name: Install dbt packages
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
+        run: dbt deps
+
+      - name: Write profiles.yml
+        run: |
+          mkdir -p ~/.dbt
+          cat <<EOF > ~/.dbt/profiles.yml
+          netflix:
+            target: ${{ github.event_name == 'push' && 'prod' || 'ci' }}
+            outputs:
+              ci:
+                type: snowflake
+                account: DDAJCJE-LK83464
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+                role: Transform
+                database: MOVIELENS
+                warehouse: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+                schema: ci_pr_${{ github.event.pull_request.number }}
+                threads: 4
+              prod:
+                type: snowflake
+                account: DDAJCJE-LK83464
+                user: ${{ secrets.SNOWFLAKE_USER }}
+                password: ${{ secrets.SNOWFLAKE_PASSWORD }}
+                role: Transform
+                database: MOVIELENS
+                warehouse: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+                schema: marts
+                threads: 4
+          EOF
+
+      - name: dbt debug
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
+        run: dbt debug
+
+      - name: dbt build (compile + run + test)
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
+        run: dbt build --fail-fast
+
+      - name: dbt docs generate
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        working-directory: ${{ env.DBT_PROJECT_DIR }}
+        run: dbt docs generate
