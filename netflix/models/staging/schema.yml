@@ -1,0 +1,171 @@
+version: 2
+
+models:
+  - name: stg_movies
+    description: "This model does a 1:1 transformation of the raw movie data by renaming columns into snake_case where relevant."
+    columns:
+      - name: movie_id
+        description: "The unique identifier for each movie."
+        tests:
+          - unique:
+              config:
+                severity: warn
+          - not_null:
+              config:
+                severity: warn
+      - name: title
+        description: "The title of the movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: genres
+        description: "The genres associated with the movie, separated by '|'."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+  - name: stg_ratings
+    description: "This model does a 1:1 transformation of the raw rating data by renaming columns into snake_case where relevant."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - user_id
+              - movie_id
+          config:
+            severity: warn
+    columns:
+      - name: user_id
+        description: "The unique identifier for each user."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: movie_id
+        description: "The unique identifier for each movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: rating
+        description: "The rating given by the user to the movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0.5
+              max_value: 5.0
+              config:
+                severity: warn
+      - name: rating_timestamp
+        description: "The timestamp when the rating was given."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+  - name: stg_tags
+    description: "This model does a 1:1 transformation of the raw tag data by renaming columns into snake_case where relevant."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - user_id
+              - movie_id
+              - tag
+          config:
+            severity: warn
+    columns:
+      - name: user_id
+        description: "The unique identifier for each user."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: movie_id
+        description: "The unique identifier for each movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: tag
+        description: "The tag associated with the movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: tag_timestamp
+        description: "The timestamp when the tag was given."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+  - name: stg_genome_tags
+    description: "This model does a 1:1 transformation of the raw genome tag data by renaming columns into snake_case where relevant."
+    columns:
+      - name: tag_id
+        description: "The unique identifier for each genome tag."
+        tests:
+          - unique:
+              config:
+                severity: warn
+          - not_null:
+              config:
+                severity: warn
+      - name: tag
+        description: "The genome tag associated with the movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+  - name: stg_genome_scores
+    description: "This model does a 1:1 transformation of the raw genome score data by renaming columns into snake_case where relevant."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - movie_id
+              - tag_id
+          config:
+            severity: warn
+    columns:
+      - name: movie_id
+        description: "The unique identifier for each movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: tag_id
+        description: "The unique identifier for each genome tag."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: relevance
+        description: "The relevance score of the genome tag for the movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+  - name: stg_links
+    description: "This model does a 1:1 transformation of the raw links data by renaming columns into snake_case where relevant."
+    columns:
+      - name: movie_id
+        description: "The unique identifier for each movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: imdb_id
+        description: "The IMDb identifier for the movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: tmdb_id
+        description: "The TMDb identifier for the movie."
+        tests:
+          - not_null:
+              config:
+                severity: warn

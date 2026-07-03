@@ -1,0 +1,132 @@
+version: 2
+
+sources:
+  - name: netflix
+    schema: raw
+    tables:
+     - name: raw_movies
+       description: "This table contains the raw movie data from the Netflix dataset."
+       columns:
+         - name: movieId
+           description: "The unique identifier for each movie."
+           tests:
+             - unique:
+                 config:
+                   severity: warn
+             - not_null:
+                 config:
+                   severity: warn
+         - name: title
+           description: "The title of the movie."
+           tests:
+             - not_null:
+                 config:
+                   severity: warn
+         - name: genres
+           description: "The genres associated with the movie, separated by '|'."
+           tests:
+             - not_null:
+                 config:
+                   severity: warn
+     - name: raw_ratings
+       description: "This table contains the raw rating data from the Netflix dataset."
+       columns:
+         - name: userId
+           description: "The unique identifier for each user."
+           tests:
+             - not_null:
+                 config:
+                   severity: warn
+         - name: movieId
+           description: "The unique identifier for each movie."
+           tests:
+             - not_null:
+                 config:
+                   severity: warn
+         - name: rating
+           description: "The rating given by the user to the movie."
+           tests:
+             - not_null:
+                 config:
+                   severity: warn
+     - name: raw_tags
+       description: "This table contains the raw tag data from the Netflix dataset."
+       columns:
+         - name: userId
+           description: "The unique identifier for each user."
+           tests:
+             - not_null:
+                 config:
+                   severity: warn
+         - name: movieId
+           description: "The unique identifier for each movie."
+           tests:
+             - not_null:
+                 config:
+                   severity: warn
+         - name: tag
+           description: "The tag associated with the movie."
+           tests:
+             - not_null:
+                 config:
+                   severity: warn
+     - name: raw_genome_tags
+       description: "This table contains the raw genome tag data from the Netflix dataset."
+       columns:
+          - name: tagId
+            description: "The unique identifier for each genome tag."
+            tests:
+              - unique:
+                  config:
+                    severity: warn
+              - not_null:
+                  config:
+                    severity: warn
+          - name: tag
+            description: "The genome tag associated with the movie."
+            tests:
+              - not_null:
+                  config:
+                    severity: warn
+     - name: raw_genome_scores
+       description: "This table contains the raw genome score data from the Netflix dataset."
+       columns:
+          - name: movieId
+            description: "The unique identifier for each movie."
+            tests:
+              - not_null:
+                  config:
+                    severity: warn
+          - name: tagId
+            description: "The unique identifier for each genome tag."
+            tests:
+              - not_null:
+                  config:
+                    severity: warn
+          - name: relevance
+            description: "The relevance score of the genome tag for the movie."
+            tests:
+              - not_null:
+                  config:
+                    severity: warn
+     - name: raw_links
+       description: "This table contains the raw link data from the Netflix dataset."
+       columns:
+          - name: movieId
+            description: "The unique identifier for each movie."
+            tests:
+              - not_null:
+                  config:
+                    severity: warn
+          - name: imdbId
+            description: "The IMDb identifier for the movie."
+            tests:
+              - not_null:
+                  config:
+                    severity: warn
+          - name: tmdbId
+            description: "The TMDb identifier for the movie."
+            tests:
+              - not_null:
+                  config:
+                    severity: warn

@@ -1,0 +1,136 @@
+version: 2
+
+models:
+  - name: int_movies_with_links
+    description: "Movies joined with external links (IMDB, TMDB) with release year extracted."
+    columns:
+      - name: movie_id
+        description: "Primary key - unique movie identifier."
+        tests:
+          - unique:
+              config:
+                severity: warn
+          - not_null:
+              config:
+                severity: warn
+      - name: title
+        description: "Movie title including release year in parentheses."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: release_year
+        description: "Release year extracted from the title string."
+      - name: genres
+        description: "Pipe-separated list of genres."
+      - name: imdb_id
+        description: "IMDB identifier for the movie."
+      - name: tmdb_id
+        description: "TMDB identifier for the movie."
+
+  - name: int_genres_exploded
+    description: "One row per movie per genre, exploded from the pipe-separated genres column."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - movie_id
+              - genre
+          config:
+            severity: warn
+    columns:
+      - name: movie_id
+        description: "Foreign key to movies."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: genre
+        description: "Individual genre value."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+
+  - name: int_ratings_summary
+    description: "Aggregated rating metrics per movie."
+    columns:
+      - name: movie_id
+        description: "Primary key - unique movie identifier."
+        tests:
+          - unique:
+              config:
+                severity: warn
+          - not_null:
+              config:
+                severity: warn
+      - name: avg_rating
+        description: "Average rating for the movie."
+      - name: rating_count
+        description: "Total number of ratings for the movie."
+      - name: min_rating
+        description: "Lowest rating given to the movie."
+      - name: max_rating
+        description: "Highest rating given to the movie."
+
+  - name: int_movie_top_tags
+    description: "Top 10 most relevant genome tags per movie ranked by relevance score."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - movie_id
+              - tag_id
+          config:
+            severity: warn
+    columns:
+      - name: movie_id
+        description: "Foreign key to movies."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: tag_id
+        description: "Foreign key to genome tags."
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: tag
+        description: "Tag name."
+      - name: relevance
+        description: "Relevance score between 0 and 1."
+      - name: tag_rank
+        description: "Rank of the tag for this movie (1 = most relevant)."
+
+  - name: int_tags
+    description: "Pass-through of genome tags from staging. Materialized as ephemeral."
+    columns:
+      - name: tag_id
+        description: "Primary key - unique tag identifier."
+      - name: tag
+        description: "Tag name."
+
+  - name: int_ratings
+    description: "Pass-through of ratings from staging. Materialized as ephemeral."
+    columns:
+      - name: user_id
+        description: "User identifier."
+      - name: movie_id
+        description: "Movie identifier."
+      - name: rating
+        description: "Rating value between 0.5 and 5.0."
+      - name: rating_timestamp
+        description: "Timestamp when the rating was given."
+
+  - name: int_tag_applications
+    description: "Pass-through of tag applications from staging. Materialized as ephemeral."
+    columns:
+      - name: user_id
+        description: "User identifier."
+      - name: movie_id
+        description: "Movie identifier."
+      - name: tag
+        description: "Tag applied to the movie."
+      - name: tag_timestamp
+        description: "Timestamp when the tag was applied."

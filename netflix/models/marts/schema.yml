@@ -1,0 +1,152 @@
+version: 2
+
+models:
+  - name: metricflow_time_spine
+    description: "Time spine table for MetricFlow semantic layer."
+    time_spine:
+      standard_granularity_column: date_day
+    columns:
+      - name: date_day
+        granularity: day
+
+  - name: dim_movies
+    description: "One row per movie with all descriptive attributes. Primary dimension for movie analysis."
+    columns:
+      - name: movie_sk
+        description: "Surrogate key for the movie."
+        tests:
+          - unique
+          - not_null
+      - name: movie_id
+        description: "Natural key - unique movie identifier."
+        tests:
+          - unique
+          - not_null
+      - name: title
+        description: "Movie title including release year in parentheses."
+        tests:
+          - not_null
+      - name: release_year
+        description: "Release year extracted from the title string."
+      - name: genres
+        description: "Pipe-separated list of genres."
+      - name: imdb_id
+        description: "IMDB identifier for the movie."
+      - name: tmdb_id
+        description: "TMDB identifier for the movie."
+
+  - name: dim_tags
+    description: "One row per genome tag. Primary dimension for tag analysis."
+    columns:
+      - name: tag_sk
+        description: "Surrogate key for the tag."
+        tests:
+          - unique
+          - not_null
+      - name: tag_id
+        description: "Natural key - unique tag identifier."
+        tests:
+          - unique
+          - not_null
+      - name: tag
+        description: "Tag name."
+        tests:
+          - not_null
+
+  - name: fct_ratings
+    description: "One row per user-movie rating. Core fact table for rating analysis."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - user_id
+              - movie_id
+    columns:
+      - name: rating_sk
+        description: "Surrogate key for the rating."
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        description: "User who gave the rating."
+        tests:
+          - not_null
+      - name: movie_id
+        description: "Movie that was rated."
+        tests:
+          - not_null
+      - name: rating
+        description: "Rating value between 0.5 and 5.0."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0.5
+                max_value: 5.0
+      - name: rating_timestamp
+        description: "Timestamp when the rating was given."
+        tests:
+          - not_null
+
+  - name: fct_tag_applications
+    description: "One row per user-movie-tag application."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - user_id
+              - movie_id
+              - tag
+    columns:
+      - name: tag_application_sk
+        description: "Surrogate key for the tag application."
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        description: "User who applied the tag."
+        tests:
+          - not_null
+      - name: movie_id
+        description: "Movie the tag was applied to."
+        tests:
+          - not_null
+      - name: tag
+        description: "Tag applied to the movie."
+        tests:
+          - not_null
+      - name: tag_timestamp
+        description: "Timestamp when the tag was applied."
+        tests:
+          - not_null
+
+  - name: fct_genre_ratings
+    description: "One row per movie per genre with aggregated rating metrics."
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - movie_id
+              - genre
+    columns:
+      - name: genre_rating_sk
+        description: "Surrogate key for the genre rating."
+        tests:
+          - unique
+          - not_null
+      - name: movie_id
+        description: "Movie identifier."
+        tests:
+          - not_null
+      - name: genre
+        description: "Raw genre value."
+        tests:
+          - not_null
+      - name: display_genre
+        description: "Clean display name for the genre from genre_mapping seed."
+        tests:
+          - not_null
+      - name: avg_rating
+        description: "Average rating for this movie."
+      - name: rating_count
+        description: "Total number of ratings for this movie."

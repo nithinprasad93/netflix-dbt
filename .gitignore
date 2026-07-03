@@ -1,0 +1,16 @@
+# dbt generated files
+target/
+dbt_packages/
+logs/
+
+# Python environment
+venv/
+.env
+*.pyc
+__pycache__/
+
+# Sensitive credentials
+profiles.yml
+
+# OS files
+.DS_Store

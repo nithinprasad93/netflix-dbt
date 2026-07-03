@@ -1,0 +1,53 @@
+semantic_models:
+  - name: ratings
+    description: "User ratings for movies"
+    model: ref('fct_ratings')
+
+    entities:
+      - name: rating
+        type: primary
+        expr: rating_sk
+
+    measures:
+      - name: average_rating
+        agg: average
+        expr: rating
+        agg_time_dimension: rating_timestamp
+      - name: total_ratings
+        agg: count
+        expr: rating_sk
+        agg_time_dimension: rating_timestamp
+      - name: total_user_ratings
+        agg: count_distinct
+        expr: user_id
+        agg_time_dimension: rating_timestamp
+
+    dimensions:
+      - name: movie_id
+        type: categorical
+      - name: rating_timestamp
+        type: time
+        type_params:
+          time_granularity: day
+
+metrics:
+  - name: average_movie_rating
+    label: "Average Movie Rating"
+    description: "Average rating across all user ratings"
+    type: simple
+    type_params:
+      measure: average_rating
+
+  - name: total_ratings
+    label: "Total Ratings"
+    description: "Total number of ratings"
+    type: simple
+    type_params:
+      measure: total_ratings
+
+  - name: total_unique_users
+    label: "Total Unique Users"
+    description: "Total number of users who have rated movies"
+    type: simple
+    type_params:
+      measure: total_user_ratings
