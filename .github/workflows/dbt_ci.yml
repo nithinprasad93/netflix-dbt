@@ -6,9 +6,6 @@ on:
   push:
     branches: [main]
 
-env:
-  DBT_PROJECT_DIR: netflix
-
 jobs:
   dbt-ci:
     name: dbt Build & Test
