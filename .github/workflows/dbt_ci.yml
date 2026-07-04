@@ -7,12 +7,16 @@ on:
     branches: [main]
 
 env:
-  DBT_PROJECT_DIR: ./netflix
+  DBT_PROJECT_DIR: netflix
 
 jobs:
   dbt-ci:
     name: dbt Build & Test
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: netflix
 
     steps:
       - name: Checkout code
@@ -24,10 +28,11 @@ jobs:
           python-version: "3.11"
 
       - name: Install dbt
-        run: |
-          pip install dbt-snowflake==1.8.4
+        working-directory: .
+        run: pip install dbt-snowflake==1.8.4
 
       - name: Write profiles.yml
+        working-directory: .
         run: |
           mkdir -p ~/.dbt
           cat <<EOF > ~/.dbt/profiles.yml
@@ -57,18 +62,14 @@ jobs:
           EOF
 
       - name: Install dbt packages
-        working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt deps
 
       - name: dbt debug
-        working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt debug
 
       - name: dbt build (compile + run + test)
-        working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt build --fail-fast
 
       - name: dbt docs generate
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        working-directory: ${{ env.DBT_PROJECT_DIR }}
         run: dbt docs generate
