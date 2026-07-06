@@ -1,0 +1,27 @@
+name: Dagster Cloud Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dagster/**'
+      - 'netflix/**'
+
+jobs:
+  dagster-cloud-deploy:
+    name: Deploy to Dagster Cloud
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Dagster Cloud Serverless
+        uses: dagster-io/dagster-cloud-action/actions/serverless_prod_deploy@v0.1
+        with:
+          dagster_cloud_api_token: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
+          organization_id: nithin-personal-project
+          project_dir: dagster
+          python_version: "3.11"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

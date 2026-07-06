@@ -1,0 +1,6 @@
+locations:
+  - location_name: netflix_pipeline
+    code_source:
+      python_file: dagster_project/__init__.py
+    build:
+      directory: .
