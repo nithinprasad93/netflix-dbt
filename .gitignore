@@ -19,3 +19,11 @@ profiles.yml
 airflow/logs/
 airflow/.env
 airflow/dbt_profiles.yml
+
+# Dagster
+dagster/.env
+dagster/.venv/
+dagster/dagster_project.egg-info/
+dagster/.dagster/
+dagster/.tmp_dagster_home*/
+netflix/package-lock.concurrent-update-lock

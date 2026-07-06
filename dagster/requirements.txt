@@ -1,0 +1,28 @@
+# ── Core Dagster packages ─────────────────────────────────────────────────────
+# dagster         : the orchestration framework (assets, jobs, sensors, schedules)
+# dagster-webserver: the Dagit UI process — serves localhost:3000 during `dagster dev`
+# dagster-dbt     : bridges dagster and dbt — turns every dbt model into a Dagster asset
+dagster
+dagster-webserver
+dagster-dbt
+
+# ── Data warehouse connector ──────────────────────────────────────────────────
+# dagster-snowflake: Dagster's first-class Snowflake resource — exposes execute_query
+#                    and handles connection pooling and cleanup automatically
+# snowflake-connector-python is pulled in transitively, but listing it explicitly
+# pins the dependency and makes the intent clear
+dagster-snowflake
+snowflake-connector-python
+
+# ── dbt adapter ──────────────────────────────────────────────────────────────
+# Must match the version in the netflix dbt project to avoid metadata format mismatches.
+# dbt_project.yml uses profile: netflix and requires the Snowflake adapter.
+dbt-snowflake==1.8.4
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+# python-dotenv: loads .env file into os.environ at process start so all
+#                credentials are available via os.getenv() / EnvVar()
+python-dotenv
+
+# requests: HTTP client used to call the TMDB REST API from the ingestion asset
+requests

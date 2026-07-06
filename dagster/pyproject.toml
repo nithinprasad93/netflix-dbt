@@ -1,0 +1,58 @@
+# pyproject.toml
+# ──────────────────────────────────────────────────────────────────────────────
+# Dagster uses pyproject.toml (PEP 517/518) to locate the Python package and
+# declare editable-install metadata. Running `pip install -e .` from this
+# directory installs dagster_project as an editable package, which means:
+#   1. Dagster can import dagster_project.definitions at startup
+#   2. Code changes are reflected immediately without reinstalling
+#
+# The [tool.dagster] section tells `dagster dev` which Python module contains
+# the top-level Definitions object. Dagster searches for `definitions.py` or
+# an `__init__.py` that exposes `defs` inside this module.
+# ──────────────────────────────────────────────────────────────────────────────
+
+[build-system]
+# setuptools is the de-facto standard build backend for pure-Python packages.
+# Using setuptools.build_meta (the stable, widely supported backend) instead of
+# the newer setuptools.backends.legacy which requires setuptools >= 69.
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dagster_project"
+version = "0.1.0"
+description = "Dagster pipeline for the Netflix / MovieLens dbt project"
+
+# Pull in all runtime dependencies from requirements.txt.
+# This keeps the dependency list in one place — requirements.txt — and
+# references them here so `pip install -e .` installs everything.
+dependencies = [
+    "dagster",
+    "dagster-webserver",
+    "dagster-dbt",
+    "dagster-snowflake",
+    "snowflake-connector-python",
+    "dbt-snowflake==1.8.4",
+    "python-dotenv",
+    "requests",
+]
+
+[project.optional-dependencies]
+# `pip install -e ".[dev]"` installs extra dev tooling.
+# dagster-webserver is already in the main deps but listed here so
+# contributors running the dev target get the full UI.
+dev = [
+    "dagster-webserver",
+]
+
+[tool.setuptools.packages.find]
+# Tell setuptools to discover Python packages under the current directory.
+# Without this, `pip install -e .` would not find dagster_project/.
+where = ["."]
+
+[tool.dagster]
+# This is the critical Dagster config: it tells `dagster dev` which Python
+# module to import and look for the top-level Definitions object.
+# Dagster loads `dagster_project` (i.e. dagster_project/__init__.py) and
+# expects to find a variable named `defs` of type dagster.Definitions.
+module_name = "dagster_project"
