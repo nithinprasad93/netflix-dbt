@@ -57,10 +57,9 @@ models:
     description: "One row per user-movie rating. Core fact table for rating analysis."
     tests:
       - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns:
-              - user_id
-              - movie_id
+          combination_of_columns:
+            - user_id
+            - movie_id
     columns:
       - name: rating_sk
         description: "Surrogate key for the rating."
@@ -80,9 +79,8 @@ models:
         tests:
           - not_null
           - dbt_expectations.expect_column_values_to_be_between:
-              arguments:
-                min_value: 0.5
-                max_value: 5.0
+              min_value: 0.5
+              max_value: 5.0
       - name: rating_timestamp
         description: "Timestamp when the rating was given."
         tests:
@@ -92,11 +90,10 @@ models:
     description: "One row per user-movie-tag application."
     tests:
       - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns:
-              - user_id
-              - movie_id
-              - tag
+          combination_of_columns:
+            - user_id
+            - movie_id
+            - tag
     columns:
       - name: tag_application_sk
         description: "Surrogate key for the tag application."
@@ -124,10 +121,9 @@ models:
     description: "One row per movie per genre with aggregated rating metrics."
     tests:
       - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns:
-              - movie_id
-              - genre
+          combination_of_columns:
+            - movie_id
+            - genre
     columns:
       - name: genre_rating_sk
         description: "Surrogate key for the genre rating."

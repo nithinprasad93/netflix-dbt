@@ -14,3 +14,8 @@ profiles.yml
 
 # OS files
 .DS_Store
+
+# Airflow
+airflow/logs/
+airflow/.env
+airflow/dbt_profiles.yml

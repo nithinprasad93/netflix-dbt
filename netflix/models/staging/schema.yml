@@ -29,10 +29,9 @@ models:
     description: "This model does a 1:1 transformation of the raw rating data by renaming columns into snake_case where relevant."
     tests:
       - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns:
-              - user_id
-              - movie_id
+          combination_of_columns:
+            - user_id
+            - movie_id
           config:
             severity: warn
     columns:
@@ -69,11 +68,10 @@ models:
     description: "This model does a 1:1 transformation of the raw tag data by renaming columns into snake_case where relevant."
     tests:
       - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns:
-              - user_id
-              - movie_id
-              - tag
+          combination_of_columns:
+            - user_id
+            - movie_id
+            - tag
           config:
             severity: warn
     columns:
@@ -123,10 +121,9 @@ models:
     description: "This model does a 1:1 transformation of the raw genome score data by renaming columns into snake_case where relevant."
     tests:
       - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns:
-              - movie_id
-              - tag_id
+          combination_of_columns:
+            - movie_id
+            - tag_id
           config:
             severity: warn
     columns:

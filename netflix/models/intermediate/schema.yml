@@ -32,10 +32,9 @@ models:
     description: "One row per movie per genre, exploded from the pipe-separated genres column."
     tests:
       - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns:
-              - movie_id
-              - genre
+          combination_of_columns:
+            - movie_id
+            - genre
           config:
             severity: warn
     columns:
@@ -77,10 +76,9 @@ models:
     description: "Top 10 most relevant genome tags per movie ranked by relevance score."
     tests:
       - dbt_utils.unique_combination_of_columns:
-          arguments:
-            combination_of_columns:
-              - movie_id
-              - tag_id
+          combination_of_columns:
+            - movie_id
+            - tag_id
           config:
             severity: warn
     columns:
