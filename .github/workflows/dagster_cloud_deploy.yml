@@ -7,6 +7,10 @@ on:
       - 'dagster/**'
       - 'netflix/**'
 
+concurrency:
+  group: dagster-cloud-deploy
+  cancel-in-progress: true
+
 jobs:
   dagster-cloud-deploy:
     name: Deploy to Dagster Cloud
@@ -17,10 +21,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy to Dagster Cloud Serverless
-        uses: dagster-io/dagster-cloud-action/actions/serverless_prod_deploy@v0.1
+        uses: dagster-io/dagster-cloud-action/actions/serverless_prod_deploy@v1.13.12
         with:
           dagster_cloud_api_token: ${{ secrets.DAGSTER_CLOUD_API_TOKEN }}
           organization_id: nithin-personal-project
+          deployment: prod
           project_dir: dagster
           python_version: "3.11"
         env:
